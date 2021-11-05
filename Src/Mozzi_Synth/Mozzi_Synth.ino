@@ -1,38 +1,3 @@
-/*
-  Example using 2 light dependent resistors (LDRs) to change
-  FM synthesis parameters, and a knob for fundamental frequency,
-  using Mozzi sonification library.
-
-  Demonstrates analog input, audio and control oscillators, phase modulation
-  and smoothing a control signal at audio rate to avoid clicks.
-  Also demonstrates AutoMap, which maps unpredictable inputs to a set range.
-
-  This example goes with a tutorial on the Mozzi site:
-  http://sensorium.github.io/Mozzi/learn/Mozzi_Introductory_Tutorial.pdf
-
-  The circuit:
-     Audio output on digital pin 9 (on a Uno or similar), or
-     check the README or http://sensorium.github.com/Mozzi/
-
-     Potentiometer connected to analog pin 0.
-       Center pin of the potentiometer goes to the analog pin.
-       Side pins of the potentiometer go to +5V and ground
-
-     Light dependent resistor (LDR) and 5.1k resistor on analog pin 1:
-       LDR from analog pin to +5V
-       5.1k resistor from analog pin to ground
-
-     Light dependent resistor (LDR) and 5.1k resistor on analog pin 2:
-       LDR from analog pin to +5V
-       5.1k resistor from analog pin to ground
-
-  Mozzi help/discussion/announcements:
-  https://groups.google.com/forum/#!forum/mozzi-users
-
-  Tim Barrass 2013.
-  This example code is in the public domain.
-*/
-
 #include <MozziGuts.h>
 #include <Oscil.h> // oscillator 
 #include <tables/cos2048_int8.h> // table for Oscils to play
@@ -77,23 +42,17 @@ long fm_intensity; // carries control info from updateControl to updateAudio
 float smoothness = 0.95f;
 Smooth <long> aSmoothIntensity(smoothness);
 
-
 void setup() {
   Serial.begin(115200); // set up the Serial output so we can look at the light level
   startMozzi(); // :))
 }
 
-
 void updateControl() {
-
-
-
   // read the knob
   int knob_0_value = mozziAnalogRead(KNOB_PIN_0); // value is 0-1023
 
   // map the knob to carrier frequency
   int carrier_freq = kMapCarrierFreq(knob_0_value);
-
   int freqVal = mozziAnalogRead(KNOB_PIN_3); // value is 0-1023
   int FRQ = mapNewParameters(freqVal);
   
@@ -103,8 +62,6 @@ void updateControl() {
   // set the FM oscillator frequencies
   aCarrier.setFreq(carrier_freq);
   aModulator.setFreq(mod_freq);
-
-
 
   int knob4 = mozziAnalogRead(KNOB_PIN_4); // value is 0-1023
   int knob4Val = mapNewParameters(knob4);
@@ -142,12 +99,10 @@ void updateControl() {
   Serial.println(); // finally, print a carraige return for the next line of debugging info
 }
 
-
 int updateAudio() {
   long modulation = aSmoothIntensity.next(fm_intensity) * aModulator.next();
   return aCarrier.phMod(modulation);
 }
-
 
 void loop() {
   audioHook();
